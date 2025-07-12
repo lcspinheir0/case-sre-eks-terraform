@@ -24,3 +24,15 @@ resource "aws_subnet" "public" {
     Ambiente = var.env
   }
 }
+
+resource "aws_subnet" "private" {
+  count                   = 2
+  vpc_id                  = aws_vpc.eks_vpc.id
+  cidr_block              = var.private_subnets[count.index]
+  availability_zone       = element(var.azs, count.index)
+  map_public_ip_on_launch = false
+  tags = {
+    Name = "${var.project}-private-${element(var.azs, count.index)}"
+    Ambiente = var.env
+  }
+}
