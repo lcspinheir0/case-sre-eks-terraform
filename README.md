@@ -52,6 +52,10 @@ AWS Console > VPC > NAT Gateways — conferir 2 NATs em "Available".
 AWS Console > VPC > Elastic IPs — conferir 2 IPs alocados para os NATs.
 
 
+## CI - Terraform Format
+
+- Workflow do GitHub Actions (`.github/workflows/terraform-fmt.yml`) valida se todos arquivos Terraform estão formatados.
+- Pull Requests só podem ser aprovados se esse check passar.
 
 
 ## Dúvidas e Troubleshooting
