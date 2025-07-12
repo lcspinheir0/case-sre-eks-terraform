@@ -2,6 +2,7 @@ provider "aws" {
   region = var.aws_region
 }
 
+#Cria vpc
 resource "aws_vpc" "eks_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
@@ -12,7 +13,7 @@ resource "aws_vpc" "eks_vpc" {
   }
 }
 
-
+#Subnet publica
 resource "aws_subnet" "public" {
   count                   = 2
   vpc_id                  = aws_vpc.eks_vpc.id
@@ -25,6 +26,7 @@ resource "aws_subnet" "public" {
   }
 }
 
+#Subnet privada
 resource "aws_subnet" "private" {
   count                   = 2
   vpc_id                  = aws_vpc.eks_vpc.id
@@ -37,10 +39,31 @@ resource "aws_subnet" "private" {
   }
 }
 
+#IGW
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.eks_vpc.id
   tags = {
     Name = "${var.project}-igw"
+    Ambiente = var.env
+  }
+}
+
+# Endereços IP elásticos (EIP) para cada NAT Gateway
+resource "aws_eip" "nat" {
+  count = 2
+}
+
+
+# NAT Gateway em cada subnet pública
+# Cria 2 Endereços IP elásticos (EIP) para serem usados pelos NATs (um por AZ).
+# Cria 2 NAT Gateways (um em cada subnet pública).
+# Permite que instâncias em subnets privadas acessem a internet, mas SEM expor IP público.
+resource "aws_nat_gateway" "nat" {
+  count = 2
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id = aws_subnet.public[count.index].id
+  tags = {
+    Name = "${var.project}-nat-${element(var.azs, count.index)}"
     Ambiente = var.env
   }
 }
