@@ -17,3 +17,7 @@ output "eks_cluster_endpoint" {
 output "eks_cluster_arn" {
   value = aws_eks_cluster.main.arn
 }
+
+output "eks_nodegroup_name" {
+  value = aws_eks_node_group.main.node_group_name
+}

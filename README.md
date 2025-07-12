@@ -100,6 +100,16 @@ AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
 **Doc:**  
 - [aws_eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
 
+### Node Group EKS
+
+- Node Group gerenciado pelo EKS em subnets privadas.
+- IAM Role com permissões mínimas vinculada aos nodes.
+- Autoscaling configurado: mínimo 1, desejado 1, máximo 1 instâncias(como é para teste)
+- Tipo de instância: `t3.medium` (ajustável conforme budget/necessidade).
+
+**Doc:**  
+- [aws_eks_node_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)
+
 
 
 
