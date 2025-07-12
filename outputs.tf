@@ -21,3 +21,7 @@ output "eks_cluster_arn" {
 output "eks_nodegroup_name" {
   value = aws_eks_node_group.main.node_group_name
 }
+
+output "ecr_repository_url" {
+  value = aws_ecr_repository.main.repository_url
+}

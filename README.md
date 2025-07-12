@@ -110,6 +110,15 @@ AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
 **Doc:**  
 - [aws_eks_node_group](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group)
 
+### Elastic Container Registry (ECR)
+
+- Repositório ECR privado criado para armazenar imagens Docker.
+- Mutabilidade de tags ativada (permite atualizar tags para testes rápidos).
+- Criptografia em repouso (AES256).
+- Output expõe a URL do repositório para integração com CI/CD.
+
+**Doc:**  
+- [aws_ecr_repository](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ecr_repository)
 
 
 

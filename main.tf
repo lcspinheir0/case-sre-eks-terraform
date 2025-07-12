@@ -117,10 +117,10 @@ resource "aws_route_table_association" "private" {
 
 # IAM Role para o Cluster EKS
 resource "aws_iam_role" "eks_cluster" {
-  name = "${var.project}-eks-cluster-role"
+  name               = "${var.project}-eks-cluster-role"
   assume_role_policy = data.aws_iam_policy_document.eks_assume_role_policy.json
   tags = {
-    Name = "${var.project}-eks-cluster-role"
+    Name     = "${var.project}-eks-cluster-role"
     Ambiente = var.env
   }
 }
@@ -147,10 +147,10 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_AmazonEKSVPCResourceContr
 
 # IAM Role para o Node Group (EC2)
 resource "aws_iam_role" "eks_nodegroup" {
-  name = "${var.project}-eks-nodegroup-role"
+  name               = "${var.project}-eks-nodegroup-role"
   assume_role_policy = data.aws_iam_policy_document.eks_node_assume_role_policy.json
   tags = {
-    Name = "${var.project}-eks-nodegroup-role"
+    Name     = "${var.project}-eks-nodegroup-role"
     Ambiente = var.env
   }
 }
@@ -193,8 +193,8 @@ resource "aws_eks_cluster" "main" {
   version = var.kubernetes_version
 
   tags = {
-    Name      = "${var.project}-eks"
-    Ambiente  = var.env
+    Name     = "${var.project}-eks"
+    Ambiente = var.env
   }
 }
 
@@ -215,6 +215,20 @@ resource "aws_eks_node_group" "main" {
 
   tags = {
     Name     = "${var.project}-nodegroup"
+    Ambiente = var.env
+  }
+}
+
+resource "aws_ecr_repository" "main" {
+  name                 = "${var.project}-ecr"
+  image_tag_mutability = "MUTABLE"
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  tags = {
+    Name     = "${var.project}-ecr"
     Ambiente = var.env
   }
 }
