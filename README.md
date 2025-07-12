@@ -1,102 +1,102 @@
 # case-sre-eks-terraform
-## Segurança
 
-- Usuário IAM criado apenas para este case, com permissões mínimas (VPC/EC2), acesso restrito via CLI.
-- A chave será removida após o uso.
-- Em produção, recomenda-se sempre adotar IAM Role/OIDC, evitando uso de chaves estáticas.
-## Etapa 1 – VPC e Subnets Públicas
+Infraestrutura completa, segura e auditável para EKS (AWS) provisionada 100% com Terraform.
 
-### O que foi provisionado
+---
 
-- **VPC dedicada** (`case-sre-eks-terraform-vpc`) com bloco CIDR `10.0.0.0/16`
-- **2 Subnets públicas** em zonas de disponibilidade diferentes (`us-east-1a`, `us-east-1b`)
-  - CIDRs: `10.0.1.0/24`, `10.0.2.0/24`
-  - Auto-assign public IP ativado
+## 🛡️ Propósito
 
-**Racional:** 
+Provisiona toda base para Kubernetes EKS em ambiente regulado (bancário/enterprise) com foco em:
+- Segurança (least privilege, sem IP público em subnet privada)
+- Segregação de ambientes (Dev, HMG, PRD)
+- CI/CD, GitOps e governança de código
+- Alta disponibilidade e fácil rollback
 
-- Subnets públicas são necessárias para permitir saída direta à Internet (via IGW/NAT futuramente) e para recursos públicos/LoadBalancers.
-- Cada subnet está em uma AZ diferente para garantir alta disponibilidade.
+---
 
-**Como validar:** 
+## 🚀 Como usar
 
-- Acesse AWS Console > VPC > Subnets
-- Confira se as duas subnets foram criadas, estão associadas à VPC e com *Auto-assign public IPv4 address* ativado.
+```bash
+git clone https://github.com/SEU-USUARIO/case-sre-eks-terraform.git
+cd case-sre-eks-terraform
 
-### Subnets Privadas
+# Configure variáveis se necessário (terraform.tfvars)
+terraform init
+terraform apply -var-file=terraform.tfvars
 
-- 2 Subnets privadas criadas em diferentes zonas de disponibilidade (`us-east-1a`, `us-east-1b`)
-  - CIDRs: `10.0.101.0/24`, `10.0.102.0/24`
-  - *Auto-assign public IP* desativado para garantir que instâncias nessas subnets não sejam expostas à internet.
-- Essas subnets serão usadas para recursos internos (ex: nodes do EKS, bancos, etc).
-
-**Como validar:**  
-AWS Console > VPC > Subnets — confira as subnets privadas, suas AZs e o campo “Auto-assign public IP” desabilitado.
-
-### Internet Gateway (IGW)
-
-- IGW criado e associado à VPC `case-sre-eks-terraform-vpc`.
-- Responsável por permitir tráfego de internet para as subnets públicas.
-**Como validar:**  
-AWS Console > VPC > Internet Gateways — conferir se o IGW está criado e anexado à VPC.
-
-
-
-### NAT Gateway
-
-- 2 NAT Gateways criados, um em cada subnet pública (alta disponibilidade).
-- 2 Endereços IP elásticos (EIP) associados aos NATs.
-- Função: permitir que instâncias nas subnets privadas acessem a internet sem exposição direta de IP público.
-**Como validar:** 
-AWS Console > VPC > NAT Gateways — conferir 2 NATs em "Available".  
-AWS Console > VPC > Elastic IPs — conferir 2 IPs alocados para os NATs.
-
-### Route Tables e Associações
-
-**Route Table Pública:**  
-  - Tabela de rotas criada para as subnets públicas, enviando todo o tráfego externo (`0.0.0.0/0`) para o Internet Gateway (IGW).
-  - Ambas subnets públicas associadas a esta tabela.
-**Route Tables Privadas:**  
-  - Duas tabelas privadas, uma para cada AZ/subnet privada.
-  - Cada tabela direciona todo tráfego externo (`0.0.0.0/0`) para seu respectivo NAT Gateway.
-  - Subnets privadas associadas às tabelas privadas.
-
-**Validação:**  
-AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
-
-**Doc:**  
-- [aws_route_table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table)
-- [aws_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route)
-- [aws_route_table_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association)
-
-
-## CI - Terraform Format
-
-- Workflow do GitHub Actions (`.github/workflows/terraform-fmt.yml`) valida se todos arquivos Terraform estão formatados.
-- Pull Requests só podem ser aprovados se esse check passar.
-
-
-## Dúvidas e Troubleshooting
-
-### Erro 1: `Unsupported argument` ao criar aws_eip
-
-Ao rodar o `terraform apply`, pode aparecer:
-│ Error: Unsupported argument
-│ 
-│   on main.tf line 54, in resource "aws_eip" "nat":
-│   54:   vpc   = true
-│ 
-│ An argument named "vpc" is not expected here.
-**Causa:**  
-A opção `vpc = true` não é mais aceita nas versões recentes do provider AWS.
-
-**Solução:**  
-Remova a linha `vpc = true` do bloco do `aws_eip`.  
-O bloco deve ficar assim:
-```hcl
-resource "aws_eip" "nat" {
-  count = 2
-}
+# Para destruir (apague recursos e evite custos!)
+terraform destroy -var-file=terraform.tfvars
 ```
 
-[documentação oficial do recurso aws_eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip)
+---
+
+## 📦 Recursos provisionados
+
+- VPC dedicada, subnets públicas/privadas, IGW, NAT GW e route tables
+- Roles IAM para EKS e Node Group (menor privilégio)
+- Cluster EKS em subnets privadas
+- Node Group gerenciado (EC2) em subnets privadas
+- ECR privado para imagens Docker
+- Outputs claros para integração CI/CD
+
+---
+
+## 🔄 Fluxo de Branch e Versionamento
+
+- **main:** apenas produção, merge via PR aprovado e CI obrigatório
+- **dev:** homologação e integração
+- **hmg:** ambiente intermediário (opcional)
+- **feat/**, **fix/**, **hotfix/**: para desenvolvimento, cada mudança em branch separada
+- **Merge apenas via Pull Request, revisão e CI**
+- **Proteção de branch**: push direto, force push e delete proibidos
+
+---
+
+## 🔔 Proteção de Branch & CI
+
+- PR obrigatório para `main` e `dev`
+- Aprovação mínima de 1 revisor
+- Status check: `terraform fmt` obrigatório em todo PR
+- [Configuração recomendada de branch protection (docs)](https://docs.github.com/pt/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/about-protected-branches)
+
+---
+
+## 📤 Outputs principais
+
+| Output                 | Descrição                     |
+|------------------------|-------------------------------|
+| vpc_id                 | ID da VPC                     |
+| private_subnet_ids     | IDs das subnets privadas      |
+| eks_cluster_name       | Nome do cluster EKS           |
+| eks_cluster_endpoint   | Endpoint Kubernetes           |
+| eks_nodegroup_name     | Nome do node group            |
+| ecr_repository_url     | URL do repositório Docker ECR |
+
+---
+
+## 🛠️ Troubleshooting rápido
+
+- **AccessDenied:**  
+  > Verifique as permissões IAM do usuário. Anexe temporariamente `IAMFullAccess`/`AdministratorAccess` ou apenas as policies mínimas necessárias.
+- **terraform fmt check falha:**  
+  > Rode localmente `terraform fmt`, commit e push novamente.
+
+---
+
+## 📚 Links úteis
+
+- [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+- [AWS EKS Docs](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
+- [EKS IAM Role](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html)
+- [Proteção de Branch GitHub](https://docs.github.com/pt/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/about-protected-branches)
+
+---
+
+## 👨‍💻 Autor
+
+Lucas  
+Case Técnico SRE
+
+---
+
+> Para detalhes, exemplos linha a linha, explicações e troubleshooting aprofundado, veja o arquivo **APRENDIZADO.md** neste repositório.

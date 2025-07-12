@@ -37,3 +37,8 @@ variable "private_subnets" {
   default     = ["10.0.101.0/24", "10.0.102.0/24"]
 }
 
+
+variable "kubernetes_version" {
+  description = "Versão do Kubernetes para o cluster EKS"
+  default     = "1.29"
+}

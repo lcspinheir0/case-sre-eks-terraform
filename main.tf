@@ -112,3 +112,123 @@ resource "aws_route_table_association" "private" {
   subnet_id      = aws_subnet.private[count.index].id
   route_table_id = aws_route_table.private[count.index].id
 }
+
+
+
+# IAM Role para o Cluster EKS
+resource "aws_iam_role" "eks_cluster" {
+  name               = "${var.project}-eks-cluster-role"
+  assume_role_policy = data.aws_iam_policy_document.eks_assume_role_policy.json
+  tags = {
+    Name     = "${var.project}-eks-cluster-role"
+    Ambiente = var.env
+  }
+}
+
+data "aws_iam_policy_document" "eks_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cluster_AmazonEKSClusterPolicy" {
+  role       = aws_iam_role.eks_cluster.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cluster_AmazonEKSVPCResourceController" {
+  role       = aws_iam_role.eks_cluster.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+}
+
+# IAM Role para o Node Group (EC2)
+resource "aws_iam_role" "eks_nodegroup" {
+  name               = "${var.project}-eks-nodegroup-role"
+  assume_role_policy = data.aws_iam_policy_document.eks_node_assume_role_policy.json
+  tags = {
+    Name     = "${var.project}-eks-nodegroup-role"
+    Ambiente = var.env
+  }
+}
+
+data "aws_iam_policy_document" "eks_node_assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "eks_nodegroup_AmazonEKSWorkerNodePolicy" {
+  role       = aws_iam_role.eks_nodegroup.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_nodegroup_AmazonEKS_CNI_Policy" {
+  role       = aws_iam_role.eks_nodegroup.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_nodegroup_AmazonEC2ContainerRegistryReadOnly" {
+  role       = aws_iam_role.eks_nodegroup.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+
+#criando cluster EKS
+resource "aws_eks_cluster" "main" {
+  name     = "${var.project}-eks"
+  role_arn = aws_iam_role.eks_cluster.arn
+
+  vpc_config {
+    subnet_ids = aws_subnet.private[*].id
+  }
+
+  version = var.kubernetes_version
+
+  tags = {
+    Name     = "${var.project}-eks"
+    Ambiente = var.env
+  }
+}
+
+
+resource "aws_eks_node_group" "main" {
+  cluster_name    = aws_eks_cluster.main.name
+  node_group_name = "${var.project}-nodegroup"
+  node_role_arn   = aws_iam_role.eks_nodegroup.arn
+  subnet_ids      = aws_subnet.private[*].id
+
+  scaling_config {
+    desired_size = 1
+    max_size     = 1
+    min_size     = 1
+  }
+
+  instance_types = ["t3.medium"]
+
+  tags = {
+    Name     = "${var.project}-nodegroup"
+    Ambiente = var.env
+  }
+}
+
+resource "aws_ecr_repository" "main" {
+  name                 = "${var.project}-ecr"
+  image_tag_mutability = "MUTABLE"
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
+
+  tags = {
+    Name     = "${var.project}-ecr"
+    Ambiente = var.env
+  }
+}
