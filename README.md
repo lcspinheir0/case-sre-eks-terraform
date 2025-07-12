@@ -75,6 +75,7 @@ O bloco deve ficar assim:
 resource "aws_eip" "nat" {
   count = 2
 }
+```
 [documentação oficial do recurso aws_eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip)
 
 
