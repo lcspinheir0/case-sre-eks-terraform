@@ -51,6 +51,24 @@ AWS Console > VPC > Internet Gateways — conferir se o IGW está criado e anexa
 AWS Console > VPC > NAT Gateways — conferir 2 NATs em "Available".  
 AWS Console > VPC > Elastic IPs — conferir 2 IPs alocados para os NATs.
 
+### Route Tables e Associações
+
+**Route Table Pública:**  
+  - Tabela de rotas criada para as subnets públicas, enviando todo o tráfego externo (`0.0.0.0/0`) para o Internet Gateway (IGW).
+  - Ambas subnets públicas associadas a esta tabela.
+**Route Tables Privadas:**  
+  - Duas tabelas privadas, uma para cada AZ/subnet privada.
+  - Cada tabela direciona todo tráfego externo (`0.0.0.0/0`) para seu respectivo NAT Gateway.
+  - Subnets privadas associadas às tabelas privadas.
+
+**Validação:**  
+AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
+
+**Doc:**  
+- [aws_route_table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table)
+- [aws_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route)
+- [aws_route_table_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association)
+
 
 ## CI - Terraform Format
 
@@ -80,23 +98,5 @@ resource "aws_eip" "nat" {
   count = 2
 }
 ```
+
 [documentação oficial do recurso aws_eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip)
-
-
-### Route Tables e Associações
-
-**Route Table Pública:**  
-  - Tabela de rotas criada para as subnets públicas, enviando todo o tráfego externo (`0.0.0.0/0`) para o Internet Gateway (IGW).
-  - Ambas subnets públicas associadas a esta tabela.
-**Route Tables Privadas:**  
-  - Duas tabelas privadas, uma para cada AZ/subnet privada.
-  - Cada tabela direciona todo tráfego externo (`0.0.0.0/0`) para seu respectivo NAT Gateway.
-  - Subnets privadas associadas às tabelas privadas.
-
-**Validação:**  
-AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
-
-**Doc:**  
-- [aws_route_table](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table)
-- [aws_route](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route)
-- [aws_route_table_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association)
