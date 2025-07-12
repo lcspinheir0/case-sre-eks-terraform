@@ -36,3 +36,11 @@ resource "aws_subnet" "private" {
     Ambiente = var.env
   }
 }
+
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.eks_vpc.id
+  tags = {
+    Name = "${var.project}-igw"
+    Ambiente = var.env
+  }
+}

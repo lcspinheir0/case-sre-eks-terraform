@@ -13,12 +13,12 @@
   - CIDRs: `10.0.1.0/24`, `10.0.2.0/24`
   - Auto-assign public IP ativado
 
-### Racional
+**Racional:** 
 
 - Subnets públicas são necessárias para permitir saída direta à Internet (via IGW/NAT futuramente) e para recursos públicos/LoadBalancers.
 - Cada subnet está em uma AZ diferente para garantir alta disponibilidade.
 
-### Como validar
+**Como validar:** 
 
 - Acesse AWS Console > VPC > Subnets
 - Confira se as duas subnets foram criadas, estão associadas à VPC e com *Auto-assign public IPv4 address* ativado.
@@ -32,3 +32,10 @@
 
 **Como validar:**  
 AWS Console > VPC > Subnets — confira as subnets privadas, suas AZs e o campo “Auto-assign public IP” desabilitado.
+
+### Internet Gateway (IGW)
+
+- IGW criado e associado à VPC `case-sre-eks-terraform-vpc`.
+- Responsável por permitir tráfego de internet para as subnets públicas.
+**Como validar:**  
+AWS Console > VPC > Internet Gateways — conferir se o IGW está criado e anexado à VPC.
