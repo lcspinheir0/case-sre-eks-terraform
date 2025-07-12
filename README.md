@@ -76,6 +76,35 @@ AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
 - Pull Requests só podem ser aprovados se esse check passar.
 
 
+### IAM Roles para EKS
+
+- IAM Role específica para o EKS Cluster (`AmazonEKSClusterPolicy`, `AmazonEKSServicePolicy`)
+- IAM Role para os Node Groups (EC2 workers), com políticas:
+  - `AmazonEKSWorkerNodePolicy`
+  - `AmazonEKS_CNI_Policy`
+  - `AmazonEC2ContainerRegistryReadOnly`
+- Ambas roles seguem o princípio do menor privilégio.
+
+**Doc AWS:**  
+- [EKS IAM Role](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html)
+- [EKS Node IAM Role](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Dúvidas e Troubleshooting
 
 ### Erro 1: `Unsupported argument` ao criar aws_eip
