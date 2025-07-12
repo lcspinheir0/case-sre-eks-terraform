@@ -39,3 +39,42 @@ AWS Console > VPC > Subnets — confira as subnets privadas, suas AZs e o campo 
 - Responsável por permitir tráfego de internet para as subnets públicas.
 **Como validar:**  
 AWS Console > VPC > Internet Gateways — conferir se o IGW está criado e anexado à VPC.
+
+
+
+### NAT Gateway
+
+- 2 NAT Gateways criados, um em cada subnet pública (alta disponibilidade).
+- 2 Endereços IP elásticos (EIP) associados aos NATs.
+- Função: permitir que instâncias nas subnets privadas acessem a internet sem exposição direta de IP público.
+**Como validar:** 
+AWS Console > VPC > NAT Gateways — conferir 2 NATs em "Available".  
+AWS Console > VPC > Elastic IPs — conferir 2 IPs alocados para os NATs.
+
+
+
+
+## Dúvidas e Troubleshooting
+
+### Erro 1: `Unsupported argument` ao criar aws_eip
+
+Ao rodar o `terraform apply`, pode aparecer:
+│ Error: Unsupported argument
+│ 
+│   on main.tf line 54, in resource "aws_eip" "nat":
+│   54:   vpc   = true
+│ 
+│ An argument named "vpc" is not expected here.
+**Causa:**  
+A opção `vpc = true` não é mais aceita nas versões recentes do provider AWS.
+
+**Solução:**  
+Remova a linha `vpc = true` do bloco do `aws_eip`.  
+O bloco deve ficar assim:
+```hcl
+resource "aws_eip" "nat" {
+  count = 2
+}
+[documentação oficial do recurso aws_eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip)
+
+
