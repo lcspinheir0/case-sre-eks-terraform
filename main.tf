@@ -8,7 +8,7 @@ resource "aws_vpc" "eks_vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
-    Name = "${var.project}-vpc"
+    Name     = "${var.project}-vpc"
     Ambiente = var.env
   }
 }
@@ -21,7 +21,7 @@ resource "aws_subnet" "public" {
   availability_zone       = element(var.azs, count.index)
   map_public_ip_on_launch = true
   tags = {
-    Name = "${var.project}-public-${element(var.azs, count.index)}"
+    Name     = "${var.project}-public-${element(var.azs, count.index)}"
     Ambiente = var.env
   }
 }
@@ -34,7 +34,7 @@ resource "aws_subnet" "private" {
   availability_zone       = element(var.azs, count.index)
   map_public_ip_on_launch = false
   tags = {
-    Name = "${var.project}-private-${element(var.azs, count.index)}"
+    Name     = "${var.project}-private-${element(var.azs, count.index)}"
     Ambiente = var.env
   }
 }
@@ -43,7 +43,7 @@ resource "aws_subnet" "private" {
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.eks_vpc.id
   tags = {
-    Name = "${var.project}-igw"
+    Name     = "${var.project}-igw"
     Ambiente = var.env
   }
 }
@@ -59,11 +59,11 @@ resource "aws_eip" "nat" {
 # Cria 2 NAT Gateways (um em cada subnet pública).
 # Permite que instâncias em subnets privadas acessem a internet, mas SEM expor IP público.
 resource "aws_nat_gateway" "nat" {
-  count = 2
+  count         = 2
   allocation_id = aws_eip.nat[count.index].id
-  subnet_id = aws_subnet.public[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
   tags = {
-    Name = "${var.project}-nat-${element(var.azs, count.index)}"
+    Name     = "${var.project}-nat-${element(var.azs, count.index)}"
     Ambiente = var.env
   }
 }
@@ -73,20 +73,20 @@ resource "aws_nat_gateway" "nat" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.eks_vpc.id
   tags = {
-    Name = "${var.project}-public-rt"
+    Name     = "${var.project}-public-rt"
     Ambiente = var.env
   }
 }
 
 resource "aws_route" "public_internet_access" {
-  route_table_id = aws_route_table.public.id
+  route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.gw.id
+  gateway_id             = aws_internet_gateway.gw.id
 }
 
 resource "aws_route_table_association" "public" {
-  count = 2
-  subnet_id = aws_subnet.public[count.index].id
+  count          = 2
+  subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
 
@@ -95,7 +95,7 @@ resource "aws_route_table" "private" {
   count  = 2
   vpc_id = aws_vpc.eks_vpc.id
   tags = {
-    Name = "${var.project}-private-rt-${element(var.azs, count.index)}"
+    Name     = "${var.project}-private-rt-${element(var.azs, count.index)}"
     Ambiente = var.env
   }
 }
