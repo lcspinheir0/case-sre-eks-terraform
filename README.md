@@ -122,7 +122,18 @@ AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
 
 
 
+### Outputs para Integração
 
+- IDs e ARNs dos principais recursos (VPC, subnets, roles)
+- Endpoint, nome e ARN do cluster EKS
+- Nome do node group e URL do repositório ECR
+- Pronto para consumo por CI/CD, integração com ArgoCD, geração de kubeconfig e deploy de workloads.
+
+Exemplo de obtenção automática:
+```bash
+terraform output eks_cluster_endpoint
+terraform output ecr_repository_url
+```
 
 
 
