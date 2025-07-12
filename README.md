@@ -89,6 +89,18 @@ AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
 - [EKS IAM Role](https://docs.aws.amazon.com/eks/latest/userguide/service_IAM_role.html)
 - [EKS Node IAM Role](https://docs.aws.amazon.com/eks/latest/userguide/create-node-role.html)
 
+### Cluster EKS
+
+- Cluster Kubernetes (EKS) gerenciado pela AWS, provisionado em subnets privadas.
+- VPC e subnets privadas já criadas via Terraform.
+- Role IAM do cluster conectada com permissões mínimas.
+- Versão do Kubernetes configurável (default: 1.29).
+- Outputs expostos: nome do cluster, endpoint, ARN.
+
+**Doc:**  
+- [aws_eks_cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster)
+
+
 
 
 

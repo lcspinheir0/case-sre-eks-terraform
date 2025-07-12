@@ -179,3 +179,21 @@ resource "aws_iam_role_policy_attachment" "eks_nodegroup_AmazonEC2ContainerRegis
   role       = aws_iam_role.eks_nodegroup.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
+
+
+#criando cluster EKS
+resource "aws_eks_cluster" "main" {
+  name     = "${var.project}-eks"
+  role_arn = aws_iam_role.eks_cluster.arn
+
+  vpc_config {
+    subnet_ids = aws_subnet.private[*].id
+  }
+
+  version = var.kubernetes_version
+
+  tags = {
+    Name      = "${var.project}-eks"
+    Ambiente  = var.env
+  }
+}
