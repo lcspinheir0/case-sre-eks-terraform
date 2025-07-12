@@ -17,10 +17,15 @@ Provisiona toda base para Kubernetes EKS em ambiente regulado (bancário/enterpr
 ## 🚀 Como usar
 
 ```bash
-git clone https://github.com/SEU-USUARIO/case-sre-eks-terraform.git
+git clone https://github.com/lcspinheir0/case-sre-eks-terraform.git
 cd case-sre-eks-terraform
 
 # Configure variáveis se necessário (terraform.tfvars)
+# Exemplo do conteudo do terraform.tfvars:
+# public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
+# azs             = ["us-east-1a", "us-east-1b"]
+# private_subnets = ["10.0.101.0/24", "10.0.102.0/24"]
+
 terraform init
 terraform apply -var-file=terraform.tfvars
 
