@@ -129,3 +129,15 @@ resource "aws_eip" "nat" {
 ```
 
 [documentação oficial do recurso aws_eip](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip)
+
+
+### Erro 2: `Erro: AccessDenied ao criar roles IAM` ao criar role
+**Causa:**  
+Esse erro ocorre quando o usuário utilizado no Terraform não possui permissões IAM suficientes.
+
+**Solução:**  
+No ambiente de case, adicione a policy `IAMFullAccess` ou uma customizada permitindo:
+- `iam:CreateRole`
+- `iam:AttachRolePolicy`
+- `iam:PassRole`
+Após criar as roles necessárias, pode remover a policy para seguir o princípio do menor privilégio.
