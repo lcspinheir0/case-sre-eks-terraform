@@ -72,8 +72,11 @@ AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
 
 ## CI - Terraform Format
 
-- Workflow do GitHub Actions (`.github/workflows/terraform-fmt.yml`) valida se todos arquivos Terraform estão formatados.
-- Pull Requests só podem ser aprovados se esse check passar.
+- Workflow do GitHub Actions garante qualidade de código com três etapas:
+  - `terraform fmt` verifica formatação
+  - `terraform validate` valida a configuração
+  - `tflint` aplica boas práticas
+- Pull Requests só podem ser aprovados se todos os checks passarem.
 
 
 ### IAM Roles para EKS
