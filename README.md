@@ -62,7 +62,7 @@ terraform destroy -var-file=terraform.tfvars
 
 - PR obrigatório para `main` e `dev`
 - Aprovação mínima de 1 revisor
-- Status check: `terraform fmt` obrigatório em todo PR
+- Status checks: `terraform fmt`, `terraform validate` e `tflint` obrigatórios em todo PR
 - [Configuração recomendada de branch protection (docs)](https://docs.github.com/pt/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/about-protected-branches)
 
 ---
