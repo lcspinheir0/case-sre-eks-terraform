@@ -44,8 +44,17 @@ terraform destroy -var-file=terraform.tfvars
 - Node Group gerenciado (EC2) em subnets privadas
 - ECR privado para imagens Docker
 - Outputs claros para integração CI/CD
+- GitOps com ArgoCD
 
 ---
+## 🚦 GitOps com ArgoCD
+
+- **ArgoCD instalado** no cluster via Helm, script versionado em `/infra/argocd`.
+- **Repositório GitOps dedicado:** [https://github.com/SEU-USUARIO/case-sre-eks-gitops](https://github.com/SEU-USUARIO/case-sre-eks-gitops)
+- Deploys 100% automatizados: qualquer alteração no repositório GitOps é sincronizada automaticamente no cluster via ArgoCD.
+- Application do ArgoCD versionado (`argocd-application.yaml`) aponta para o repositório e path dos manifests/apps.
+- **Acesso ao ArgoCD:** via port-forward (documentado no APRENDIZADO.md).
+
 
 ## 🔄 Fluxo de Branch e Versionamento
 
