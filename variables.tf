@@ -1,10 +1,12 @@
 variable "aws_region" {
+  type        = string
   description = "Região da AWS"
   default     = "us-east-1"
 }
 
 variable "vpc_cidr" {
   description = "Bloco CIDR da VPC"
+  type        = string
   default     = "10.0.0.0/16"
 }
 
@@ -39,6 +41,7 @@ variable "private_subnets" {
 
 
 variable "kubernetes_version" {
+  type        = string
   description = "Versão do Kubernetes para o cluster EKS"
   default     = "1.29"
 }
