@@ -12,11 +12,13 @@ variable "vpc_cidr" {
 
 variable "project" {
   description = "Nome do projeto para tags"
+  type        = string
   default     = "case-sre-eks-terraform"
 }
 
 variable "env" {
   description = "Ambiente do provisionamento"
+  type        = string
   default     = "dev"
 }
 
