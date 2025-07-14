@@ -70,10 +70,13 @@ AWS Console > VPC > Route Tables — confira as rotas, associações e gateways.
 - [aws_route_table_association](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association)
 
 
-## CI - Terraform Format
+## CI - Terraform
 
-- Workflow do GitHub Actions (`.github/workflows/terraform-fmt.yml`) valida se todos arquivos Terraform estão formatados.
-- Pull Requests só podem ser aprovados se esse check passar.
+- Workflow do GitHub Actions garante qualidade de código com três etapas:
+  - `terraform fmt` verifica formatação
+  - `terraform validate` valida a configuração
+  - `tflint` aplica boas práticas
+- Pull Requests só podem ser aprovados se todos os checks passarem.
 
 
 ### IAM Roles para EKS
