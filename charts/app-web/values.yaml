@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  repository: "<SEU_REPO_ECR>.amazonaws.com/app-web"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    cpu: "50m"
+    memory: "128Mi"
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
+
+livenessProbe:
+  path: /healthz
+  port: 8080
+readinessProbe:
+  path: /readyz
+  port: 8080
+
+env:
+  - name: ENV
+    value: "dev"
