@@ -1,4 +1,7 @@
 # case-sre-eks-terraform
+# Desafio 1 abaixo, desafio 2 no repositório:
+ - https://github.com/lcspinheir0/case-sre-eks-tshoot
+
 <img width="3165" height="3840" alt="Untitled diagram _ Mermaid Chart-2025-07-13-010803" src="https://github.com/user-attachments/assets/51aeec08-876a-439b-b3ea-ffbd4d491036" />
 
 Infraestrutura completa, segura e auditável para EKS (AWS) provisionada 100% com Terraform.
