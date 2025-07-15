@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: "<SEU_REPO_ECR>.amazonaws.com/app-web"
+  repository: "044022201110.dkr.ecr.us-east-1.amazonaws.com/case-sre-eks-terraform-ecr"
   tag: "latest"
   pullPolicy: IfNotPresent
 

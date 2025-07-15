@@ -13,7 +13,7 @@ variable "vpc_cidr" {
 variable "project" {
   description = "Nome do projeto para tags"
   type        = string
-  default     = "case-sre-eks-terraform"
+  default     = "case-eks"
 }
 
 variable "env" {

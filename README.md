@@ -1,7 +1,21 @@
 # case-sre-eks-terraform
-<img width="3165" height="3840" alt="Untitled diagram _ Mermaid Chart-2025-07-13-010803" src="https://github.com/user-attachments/assets/51aeec08-876a-439b-b3ea-ffbd4d491036" />
+## 🏗️ Arquitetura & Decisões Técnicas
 
-Infraestrutura completa, segura e auditável para EKS (AWS) provisionada 100% com Terraform.
+- **100% IaC com Terraform, usando módulos oficiais e boas práticas.**
+- **Segurança:** IRSA (OIDC) ativado por padrão (pronto pra uso seguro de service accounts Kubernetes + IAM Roles).
+- **Separação de ambientes:** código preparado para múltiplos workspaces (`dev`, `hmg`, `prd`), facilitando pipelines multi-stage.
+- **Observabilidade:** arquitetura pronta para sidecars (OpenTelemetry, Datadog) e SLI/SLOs.
+- **Rollback fácil:** basta reverter código, rodar `terraform apply` e tudo volta ao último estado validado.
+
+<img src="https://github.com/user-attachments/assets/51aeec08-876a-439b-b3ea-ffbd4d491036" width="600" />
+
+- **Veja detalhes dos motivos de cada escolha e trade-offs** em [APRENDIZADO.md](./APRENDIZADO.md).
+
+## 🔐 Segurança Avançada com IRSA (OIDC)
+
+- O cluster EKS já sai pronto para usar [IAM Roles for Service Accounts (IRSA)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html).
+- Permite que pods acessem recursos AWS **sem expor chaves**, cada workload com mínimo privilégio.
+- Veja exemplos em `/infra/argocd` e scripts de aplicação do OIDC.
 
 ---
 
@@ -78,14 +92,23 @@ terraform destroy -var-file=terraform.tfvars
 
 ## 📤 Outputs principais
 
-| Output                 | Descrição                     |
-|------------------------|-------------------------------|
-| vpc_id                 | ID da VPC                     |
-| private_subnet_ids     | IDs das subnets privadas      |
-| eks_cluster_name       | Nome do cluster EKS           |
-| eks_cluster_endpoint   | Endpoint Kubernetes           |
-| eks_nodegroup_name     | Nome do node group            |
-| ecr_repository_url     | URL do repositório Docker ECR |
+| Output                 | Descrição                             |
+|------------------------|---------------------------------------|
+| vpc_id                 | ID da VPC                             |
+| private_subnet_ids     | IDs das subnets privadas              |
+| eks_cluster_name       | Nome do cluster EKS                   |
+| eks_cluster_endpoint   | Endpoint Kubernetes                   |
+| ecr_repository_url     | URL do repositório Docker ECR         |
+| oidc_provider_arn      | (Novo) ARN do OIDC provider           |
+
+
+## 🚀 Provisionando com Módulos Oficiais
+
+Este projeto utiliza módulos validados da comunidade:
+
+- [`terraform-aws-modules/vpc`](https://github.com/terraform-aws-modules/terraform-aws-vpc)
+- [`terraform-aws-modules/eks`](https://github.com/terraform-aws-modules/terraform-aws-eks)
+- [`terraform-aws-modules/ecr`](https://github.com/terraform-aws-modules/terraform-aws-ecr)
 
 ---
 

@@ -263,3 +263,54 @@ kubectl apply -f argocd-application.yaml -n argocd
 > **Racional:**  
 > O uso de ArgoCD garante deploy auditável, reversível, e governança GitOps de verdade.  
 > Todas as configurações (manifest, scripts, application) estão versionadas e podem ser auditadas facilmente.
+
+
+
+
+
+
+---
+---
+## Aprendizado – Migração para Módulos Oficiais Terraform
+
+### Contexto
+
+No início do projeto, optei por criar toda a infraestrutura (VPC, subnets, IAM, EKS, ECR) de forma manual, declarando cada recurso diretamente no código. Essa abordagem dá total controle, mas aumenta o esforço de manutenção, risco de inconsistências e dificulta o reuso em novos ambientes/regiões.
+
+### Decisão: Adotar módulos oficiais do Terraform
+
+Após análise, migrei para os módulos oficiais [terraform-aws-modules](https://github.com/terraform-aws-modules) para VPC, EKS e ECR, priorizando:
+- **Padronização** com as melhores práticas da AWS;
+- **Reusabilidade** (infra como lego);
+- **Facilidade de manutenção** e upgrades;
+- **Redução de código repetido e potencial para erros**;
+- **Foco em entregar valor real (segurança, integração, arquitetura) ao invés de reinventar a roda.**
+
+### Desafio: Erro com policy do ECR
+
+Durante a migração, ao aplicar o módulo de ECR, me deparei com o erro:
+```
+InvalidParameterException: Invalid parameter at 'lifecyclePolicyText' failed to satisfy constraint: 'Member must have length greater than or equal to 100'
+```
+Motivo: O módulo ECR tenta criar uma policy de lifecycle padrão, mas sem conteúdo suficiente (AWS exige mínimo de 100 caracteres no JSON da policy).
+
+### Solução adotada
+
+Para não bloquear o provisionamento, **desativei a criação automática da policy** adicionando no bloco do módulo ECR:
+```hcl
+create_lifecycle_policy = false
+```
+Assim, o ECR foi provisionado normalmente e o `terraform apply` executou sem erros.
+
+### Pontos de atenção / próximos passos
+
+- Em ambiente real/produtivo, **é fundamental criar uma policy de lifecycle** para evitar acúmulo de imagens antigas e custos desnecessários.  
+- O ideal é versionar e revisar essa policy junto ao time, alinhando retenção e regras de compliance.
+
+### Resumo
+
+- **Por que migrar para módulos?** Padrão de mercado, governança, manutenção simples, menos chance de erro e agilidade.  
+- **Por que desabilitar a policy do ECR?** Foco em entrega rápida e provisionamento funcional em ambiente de teste.  
+- **Evolução futura:** Voltar para implementar uma policy customizada de lifecycle no ECR, alinhada com o ciclo de vida das imagens do projeto.
+
+> Migrar para módulos oficiais acelera entregas e reduz riscos, mas exige sempre validação crítica dos padrões automáticos – principalmente em temas de segurança e governança.
