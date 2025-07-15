@@ -1,20 +1,24 @@
 variable "aws_region" {
+  type        = string
   description = "Região da AWS"
   default     = "us-east-1"
 }
 
 variable "vpc_cidr" {
   description = "Bloco CIDR da VPC"
+  type        = string
   default     = "10.0.0.0/16"
 }
 
 variable "project" {
   description = "Nome do projeto para tags"
+  type        = string
   default     = "case-sre-eks-terraform"
 }
 
 variable "env" {
   description = "Ambiente do provisionamento"
+  type        = string
   default     = "dev"
 }
 
@@ -39,6 +43,7 @@ variable "private_subnets" {
 
 
 variable "kubernetes_version" {
+  type        = string
   description = "Versão do Kubernetes para o cluster EKS"
   default     = "1.29"
 }

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-gitops-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/lcspinheir0/case-sre-eks-terraform.git'
+    targetRevision: main
+    path: teste-argocd/apps/my-app
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: my-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,4 +1,5 @@
 # case-sre-eks-terraform
+<img width="3165" height="3840" alt="Untitled diagram _ Mermaid Chart-2025-07-13-010803" src="https://github.com/user-attachments/assets/51aeec08-876a-439b-b3ea-ffbd4d491036" />
 
 Infraestrutura completa, segura e auditável para EKS (AWS) provisionada 100% com Terraform.
 
@@ -17,10 +18,15 @@ Provisiona toda base para Kubernetes EKS em ambiente regulado (bancário/enterpr
 ## 🚀 Como usar
 
 ```bash
-git clone https://github.com/SEU-USUARIO/case-sre-eks-terraform.git
+git clone https://github.com/lcspinheir0/case-sre-eks-terraform.git
 cd case-sre-eks-terraform
 
 # Configure variáveis se necessário (terraform.tfvars)
+# Exemplo do conteudo do terraform.tfvars:
+# public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
+# azs             = ["us-east-1a", "us-east-1b"]
+# private_subnets = ["10.0.101.0/24", "10.0.102.0/24"]
+
 terraform init
 terraform apply -var-file=terraform.tfvars
 
@@ -38,8 +44,17 @@ terraform destroy -var-file=terraform.tfvars
 - Node Group gerenciado (EC2) em subnets privadas
 - ECR privado para imagens Docker
 - Outputs claros para integração CI/CD
+- GitOps com ArgoCD
 
 ---
+## 🚦 GitOps com ArgoCD
+
+- **ArgoCD instalado** no cluster via Helm, script versionado em `/infra/argocd`.
+- **Repositório GitOps dedicado:** [https://github.com/SEU-USUARIO/case-sre-eks-gitops](https://github.com/SEU-USUARIO/case-sre-eks-gitops)
+- Deploys 100% automatizados: qualquer alteração no repositório GitOps é sincronizada automaticamente no cluster via ArgoCD.
+- Application do ArgoCD versionado (`argocd-application.yaml`) aponta para o repositório e path dos manifests/apps.
+- **Acesso ao ArgoCD:** via port-forward (documentado no APRENDIZADO.md).
+
 
 ## 🔄 Fluxo de Branch e Versionamento
 
@@ -56,7 +71,7 @@ terraform destroy -var-file=terraform.tfvars
 
 - PR obrigatório para `main` e `dev`
 - Aprovação mínima de 1 revisor
-- Status check: `terraform fmt` obrigatório em todo PR
+- Status checks: `terraform fmt`, `terraform validate` e `tflint` obrigatórios em todo PR
 - [Configuração recomendada de branch protection (docs)](https://docs.github.com/pt/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/about-protected-branches)
 
 ---
