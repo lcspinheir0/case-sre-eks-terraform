@@ -57,6 +57,78 @@ terraform destroy -var-file=terraform.tfvars
 - Deploys 100% automatizados: qualquer alteração no repositório GitOps é sincronizada automaticamente no cluster via ArgoCD.
 - Application do ArgoCD versionado (`argocd-application.yaml`) aponta para o repositório e path dos manifests/apps.
 - **Acesso ao ArgoCD:** via port-forward (documentado no APRENDIZADO.md).
+---
+
+# Observabilidade com Prometheus e Grafana
+
+Esta seção explica como implementar monitoramento e observabilidade no cluster EKS utilizando ferramentas open source: Prometheus e Grafana.
+
+## Instalação via Helm
+
+Recomenda-se versionar os manifests/Helm charts em um diretório dedicado, como `/infra/observability` ou `/infra/prometheus-grafana`.
+
+### 1. Adicionando os repositórios Helm
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+```
+
+### 2. Instalando Prometheus Stack
+
+```bash
+kubectl create namespace monitoring
+helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring
+```
+
+> O kube-prometheus-stack já instala Prometheus, Alertmanager e Grafana pré-configurados para Kubernetes.
+
+### 3. Instalando Grafana (caso queira separado)
+
+```bash
+helm install grafana grafana/grafana -n monitoring
+```
+
+## Configuração e Outputs
+
+- Após o deploy, exponha o serviço do Grafana conforme sua necessidade:
+  - **NodePort**
+  - **LoadBalancer**
+  - **Port-forward** (mais prático para dev/teste):
+
+```bash
+kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
+```
+
+- Acesse o dashboard: http://localhost:3000
+- Usuário/senha padrão: `admin` / `prom-operator` (ou conforme definido no Helm Chart).
+
+> Documente no README como acessar o dashboard e alterar credenciais no primeiro acesso.
+
+## Organização dos Módulos
+
+- **Terraform:** Um módulo `observability` pode ser adicionado para criar permissões IAM necessárias, security groups e outputs de endpoints.
+- **Helm/Manifests:** Mantenha os arquivos Helm ou YAML em `/infra/observability` ou em um repositório GitOps dedicado, sincronizado via ArgoCD.
+
+## Integração com GitOps
+
+- Os manifests/Helm charts de observabilidade podem ser versionados no repositório GitOps.
+- Exemplo de estrutura:
+  ```
+  apps/
+    observability/
+      prometheus-release.yaml
+      grafana-release.yaml
+  ```
+- O ArgoCD irá cuidar do deploy e atualização automática desses componentes no cluster.
+
+---
+
+> Com esta abordagem, sua stack Kubernetes estará monitorada, com dashboards de fácil acesso e integração com alertas.
+
+
+---
 
 
 ## 🔄 Fluxo de Branch e Versionamento
